@@ -113,7 +113,7 @@ function createTables() {
                 role VARCHAR(50) DEFAULT 'employee',
                 department VARCHAR(100),
                 position VARCHAR(100),
-                avatar_url TEXT DEFAULT,
+                avatar_url TEXT,
                 phone VARCHAR(20),
                 is_active BOOLEAN DEFAULT 1,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -217,6 +217,7 @@ function createTables() {
 
             db.run(tables[index], (err) => {
                 if (err) {
+                    console.error('Error creating table:', err);
                     reject(err);
                     return;
                 }
@@ -248,7 +249,7 @@ function createDefaultData() {
                             passwordHash, 
                             'System Administrator', 
                             'admin',
-                            'https://i.imgur.com/image.png',
+                            'https://i.imgur.com/RpGGkQ1.png',
                             'Management',
                             'System Manager'
                         ],
@@ -414,11 +415,6 @@ const authenticateToken = async (req, res, next) => {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         
-        const revokedToken = await dbGet('SELECT id FROM user_sessions WHERE token = ? AND is_revoked = 1', [token]);
-        if (revokedToken) {
-            return res.status(401).json({ error: 'Token revoked' });
-        }
-
         const user = await dbGet(
             `SELECT id, email, name, role, department, position, avatar_url, is_active 
              FROM users WHERE id = ? AND is_active = 1`,
@@ -469,17 +465,6 @@ app.post('/api/auth/login', [
         const ipAddress = req.ip;
         const userAgent = req.get('User-Agent');
 
-        const recentFailures = await dbAll(
-            `SELECT COUNT(*) as count FROM activity_logs 
-             WHERE ip_address = ? AND activity_type = 'login_failed' 
-             AND created_at > datetime('now', '-15 minutes')`,
-            [ipAddress]
-        );
-
-        if (recentFailures[0].count >= 5) {
-            return res.status(429).json({ error: 'Too many failed attempts. Please try again later.' });
-        }
-
         const user = await dbGet(
             `SELECT id, email, password_hash, name, role, department, position, avatar_url, is_active, login_attempts, locked_until
              FROM users WHERE email = ?`,
@@ -525,12 +510,6 @@ app.post('/api/auth/login', [
 
         const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: '24h' });
 
-        await dbRun(
-            `INSERT INTO user_sessions (user_id, token, ip_address, user_agent, expires_at)
-             VALUES (?, ?, ?, ?, datetime('now', '+24 hours'))`,
-            [user.id, token, ipAddress, userAgent]
-        );
-
         await logActivity(user.id, 'login', `User ${user.name} logged in`, ipAddress, userAgent);
 
         const { password_hash, login_attempts, locked_until, ...userWithoutPassword } = user;
@@ -550,11 +529,6 @@ app.post('/api/auth/login', [
 
 app.post('/api/auth/logout', authenticateToken, async (req, res) => {
     try {
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
-        
-        await dbRun('UPDATE user_sessions SET is_revoked = 1 WHERE token = ?', [token]);
-        
         await logActivity(req.user.id, 'logout', `User ${req.user.name} logged out`, req.ip, req.get('User-Agent'));
         
         res.json({ success: true, message: 'Logout successful' });
@@ -611,7 +585,7 @@ app.post('/api/users', authenticateToken, requireAdmin, [
         const result = await dbRun(
             `INSERT INTO users (email, password_hash, name, role, department, position, phone, avatar_url, created_by)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [email, passwordHash, name, role, department, position, phone, avatar_url || 'https://i.imgur.com/image.png', req.user.id]
+            [email, passwordHash, name, role, department, position, phone, avatar_url || 'https://i.imgur.com/RpGGkQ1.png', req.user.id]
         );
 
         await dbRun(`INSERT INTO user_profiles (user_id) VALUES (?)`, [result.id]);
@@ -1126,21 +1100,7 @@ app.get('/api/activities', authenticateToken, async (req, res) => {
             LIMIT 200
         `);
 
-        const systemLogs = [
-            {
-                id: 'system-001',
-                user_name: 'System',
-                user_role: 'system',
-                activity_type: 'system_audit',
-                description: `Activity logs accessed by ${req.user.name} (${req.user.role})`,
-                created_at: new Date().toISOString(),
-                ip_address: req.ip
-            }
-        ];
-
-        const allLogs = [...systemLogs, ...activities];
-
-        res.json({ success: true, data: allLogs });
+        res.json({ success: true, data: activities });
     } catch (error) {
         console.error('Activities fetch error:', error);
         res.status(500).json({ error: 'Failed to load activities' });
