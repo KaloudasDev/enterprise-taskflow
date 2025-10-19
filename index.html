@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise TaskFlow</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h1>Enterprise TaskFlow</h1>
+                <p>Ultimate Team Management System</p>
+            </div>
+            <form id="loginForm" class="login-form" autocomplete="off">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="text" 
+                               id="email" 
+                               name="username" 
+                               required 
+                               autocomplete="nope"
+                               placeholder="Enter your Email">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" 
+                               id="password" 
+                               name="new-password" 
+                               required 
+                               autocomplete="new-password"
+                               placeholder="Enter your Password">
+                        <button type="button" class="password-toggle" tabindex="-1">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+            </form>
+            <div class="login-footer">
+                <p><i class="fas fa-info-circle"></i> Contact system administrator for access</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="appContainer" class="app-container hidden">
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-tasks"></i>
+                <span>Enterprise TaskFlow</span>
+            </div>
+            
+            <div class="user-info">
+                <img id="userAvatar" class="user-avatar" src="" alt="User">
+                <div class="user-details">
+                    <span id="userName" class="user-name"></span>
+                    <span id="userRole" class="user-role"></span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="tasks">
+                    <i class="fas fa-list-check"></i>
+                    <span>Task Management</span>
+                </a>
+                <a href="#" class="nav-item admin-only" data-section="users" style="display: none;">
+                    <i class="fas fa-users-cog"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="#" class="nav-item" data-section="reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics & Reports</span>
+                </a>
+                <a href="#" class="nav-item admin-only" data-section="permissions" style="display: none;">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Group Permissions</span>
+                </a>
+                <a href="#" class="nav-item" data-section="file-storage">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>File Storage</span>
+                </a>
+                <a href="#" class="nav-item admin-only" data-section="activity-logs" style="display: none;">
+                    <i class="fas fa-history"></i>
+                    <span>Server Activity</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="globalSearch" placeholder="Search tasks, documents...">
+                    </div>
+                    <div class="header-actions">
+                        <button class="icon-btn" id="notificationsBtn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge hidden">0</span>
+                        </button>
+                        <div class="user-profile" id="headerProfileBtn">
+                            <img id="headerAvatar" class="header-avatar" src="" alt="User">
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <section id="dashboardSection" class="content-section">
+            </section>
+
+            <section id="tasksSection" class="content-section hidden">
+                <div class="section-header">
+                    <h2>Task Management</h2>
+                    <button class="btn-primary" id="addTaskBtn">
+                        <i class="fas fa-plus"></i>
+                        Create Task
+                    </button>
+                </div>
+                <div class="task-filters">
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-filter="all">All Tasks</button>
+                        <button class="filter-btn" data-filter="my">My Tasks</button>
+                        <button class="filter-btn" data-filter="assigned">Assigned</button>
+                    </div>
+                    <div class="filter-group">
+                        <select class="filter-select" id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                        <select class="filter-select" id="priorityFilter">
+                            <option value="">All Priority</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="task-list" id="taskListContainer">
+                </div>
+            </section>
+
+            <section id="usersSection" class="content-section hidden">
+                <div class="section-header">
+                    <h2>User Management</h2>
+                    <button class="btn-primary" id="addUserBtn">
+                        <i class="fas fa-user-plus"></i>
+                        Add User
+                    </button>
+                </div>
+                <div class="users-grid" id="usersGrid">
+                </div>
+            </section>
+
+            <section id="reportsSection" class="content-section hidden">
+                <div class="reports-container">
+                    <div class="reports-header">
+                        <h2>Analytics & Reports</h2>
+                        <div class="report-controls">
+                            <select class="filter-select" id="reportPeriod">
+                                <option value="7d">Last 7 Days</option>
+                                <option value="30d">Last 30 Days</option>
+                                <option value="90d">Last 90 Days</option>
+                                <option value="1y">Last Year</option>
+                            </select>
+                            <button class="btn-primary" id="exportReport">
+                                <i class="fas fa-download"></i>
+                                Export Report
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="reports-grid">
+                        <div class="report-card large">
+                            <h3>Task Completion Rate</h3>
+                            <div class="chart-container">
+                                <canvas id="completionChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="report-card">
+                            <h3>Performance Metrics</h3>
+                            <div class="metrics-grid">
+                                <div class="metric-item">
+                                    <span class="metric-value">85%</span>
+                                    <span class="metric-label">On Time Completion</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-value">12.3</span>
+                                    <span class="metric-label">Avg. Tasks/Week</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-value">2.1</span>
+                                    <span class="metric-label">Days Overdue Avg</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="report-card">
+                            <h3>Team Performance</h3>
+                            <div class="team-stats" id="teamPerformanceStats">
+                            </div>
+                        </div>
+                        
+                        <div class="report-card large">
+                            <h3>Task Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="distributionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="permissionsSection" class="content-section hidden">
+                <div class="section-header">
+                    <h2>Group Permissions</h2>
+                    <p>Manage role-based permissions for the system</p>
+                </div>
+                
+                <div class="permissions-container">
+                    <div class="permissions-grid">
+                        <div class="permission-role-card">
+                            <h3><i class="fas fa-user-tie"></i> Administrator</h3>
+                            <div class="permission-list">
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="checkmark"></span>
+                                        Create Task
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="checkmark"></span>
+                                        Edit Task
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="checkmark"></span>
+                                        Delete Task
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="checkmark"></span>
+                                        View Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="checkmark"></span>
+                                        Add Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="checkmark"></span>
+                                        Edit Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="checkmark"></span>
+                                        Remove Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="checkmark"></span>
+                                        View Server Activity
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="checkmark"></span>
+                                        Upload Files
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="checkmark"></span>
+                                        Download Files
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="checkmark"></span>
+                                        Delete Files
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="permission-note">
+                                <i class="fas fa-info-circle"></i>
+                                Administrator has all permissions by default
+                            </div>
+                        </div>
+
+                        <div class="permission-role-card">
+                            <h3><i class="fas fa-user-cog"></i> Manager</h3>
+                            <div class="permission-list">
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="manager-create-task" checked>
+                                        <span class="checkmark"></span>
+                                        Create Task
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="manager-edit-task" checked>
+                                        <span class="checkmark"></span>
+                                        Edit Task
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="manager-delete-task">
+                                        <span class="checkmark"></span>
+                                        Delete Task
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="manager-view-users" checked>
+                                        <span class="checkmark"></span>
+                                        View Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="manager-add-users">
+                                        <span class="checkmark"></span>
+                                        Add Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="manager-edit-users">
+                                        <span class="checkmark"></span>
+                                        Edit Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="manager-remove-users">
+                                        <span class="checkmark"></span>
+                                        Remove Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="manager-view-activity-logs" checked>
+                                        <span class="checkmark"></span>
+                                        View Server Activity
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="manager-upload-files" checked>
+                                        <span class="checkmark"></span>
+                                        Upload Files
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="manager-download-files" checked>
+                                        <span class="checkmark"></span>
+                                        Download Files
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="manager-delete-files" checked>
+                                        <span class="checkmark"></span>
+                                        Delete Files
+                                    </label>
+                                </div>
+                            </div>
+                            <button class="btn-primary btn-save-permissions" data-role="manager">
+                                <i class="fas fa-save"></i>
+                                Save Permissions
+                            </button>
+                        </div>
+
+                        <div class="permission-role-card">
+                            <h3><i class="fas fa-user"></i> Employee</h3>
+                            <div class="permission-list">
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="employee-create-task">
+                                        <span class="checkmark"></span>
+                                        Create Task
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="employee-edit-task" checked>
+                                        <span class="checkmark"></span>
+                                        Edit Task
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="employee-delete-task">
+                                        <span class="checkmark"></span>
+                                        Delete Task
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="employee-view-users">
+                                        <span class="checkmark"></span>
+                                        View Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="employee-add-users">
+                                        <span class="checkmark"></span>
+                                        Add Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="employee-edit-users">
+                                        <span class="checkmark"></span>
+                                        Edit Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="employee-remove-users">
+                                        <span class="checkmark"></span>
+                                        Remove Users
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="employee-view-activity-logs">
+                                        <span class="checkmark"></span>
+                                        View Server Activity
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="employee-upload-files" checked>
+                                        <span class="checkmark"></span>
+                                        Upload Files
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="employee-download-files" checked>
+                                        <span class="checkmark"></span>
+                                        Download Files
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <label class="permission-checkbox">
+                                        <input type="checkbox" id="employee-delete-files">
+                                        <span class="checkmark"></span>
+                                        Delete Files
+                                    </label>
+                                </div>
+                            </div>
+                            <button class="btn-primary btn-save-permissions" data-role="employee">
+                                <i class="fas fa-save"></i>
+                                Save Permissions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="fileStorageSection" class="content-section hidden">
+                <div class="section-header">
+                    <h2>File Storage</h2>
+                    <button class="btn-primary" id="uploadFileBtn">
+                        <i class="fas fa-upload"></i>
+                        Upload File
+                    </button>
+                </div>
+                <div class="file-storage-container" id="fileStorageContainer">
+                </div>
+            </section>
+
+            <section id="activityLogsSection" class="content-section hidden">
+                <div class="section-header">
+                    <h2>Server Activity Logs</h2>
+                    <button class="btn-primary" id="refreshActivityLogs">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                </div>
+                <div class="activity-logs-container" id="activityLogsContainer">
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="taskModalTitle">Create New Task</h3>
+                <button class="close-modal" id="closeTaskModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm">
+                    <input type="hidden" id="taskId">
+                    <div class="form-group">
+                        <label for="taskTitle">Task Title *</label>
+                        <input type="text" id="taskTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Description</label>
+                        <textarea id="taskDescription" rows="3" placeholder="Enter task description"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskPriority">Priority *</label>
+                            <select id="taskPriority" required>
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskStatus">Status</label>
+                            <select id="taskStatus">
+                                <option value="pending">Pending</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskDueDate">Due Date *</label>
+                            <input type="date" id="taskDueDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskAssignee">Assign To</label>
+                            <select id="taskAssignee">
+                                <option value="">Unassigned</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskEstimatedHours">Estimated Hours</label>
+                            <input type="number" id="taskEstimatedHours" min="0" step="0.5" placeholder="0.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="taskActualHours">Actual Hours</label>
+                            <input type="number" id="taskActualHours" min="0" step="0.5" placeholder="0.0">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="cancelTask">Cancel</button>
+                        <button type="submit" class="btn-primary" id="taskSubmitBtn">Create Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="userModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="userModalTitle">Create New User</h3>
+                <button class="close-modal" id="closeUserModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <input type="hidden" id="userId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userName">Full Name *</label>
+                            <input type="text" id="userName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmail">Email *</label>
+                            <input type="email" id="userEmail" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" id="passwordField">
+                            <label for="userPassword">Password *</label>
+                            <input type="password" id="userPassword" minlength="8" required>
+                            <small>Minimum 8 characters</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="userRole">Role *</label>
+                            <select id="userRole" required>
+                                <option value="employee">Employee</option>
+                                <option value="manager">Manager</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userDepartment">Department</label>
+                            <input type="text" id="userDepartment">
+                        </div>
+                        <div class="form-group">
+                            <label for="userPosition">Position</label>
+                            <input type="text" id="userPosition">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="userAvatarUrl">Avatar URL</label>
+                        <input type="url" id="userAvatarUrl" placeholder="https://example.com/avatar.jpg">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="cancelUser">Cancel</button>
+                        <button type="submit" class="btn-primary" id="userSubmitBtn">Create User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal modal-large">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-cog"></i> Profile Management</h3>
+                <button class="close-modal" id="closeProfileModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-sections">
+                    <div class="profile-section">
+                        <h4>Avatar Settings</h4>
+                        <form id="avatarForm" class="avatar-form">
+                            <div class="avatar-preview">
+                                <img id="avatarPreview" src="" alt="Avatar Preview">
+                            </div>
+                            <div class="form-group">
+                                <label for="avatarUrl">Avatar Image URL</label>
+                                <input type="url" id="avatarUrl" placeholder="https://example.com/avatar.jpg" value="https://i.imgur.com/RpGGkQ1.png">
+                                <small>Enter a direct image URL for your avatar</small>
+                            </div>
+                            <button type="submit" class="btn-primary">Update Avatar</button>
+                        </form>
+                    </div>
+
+                    <div class="profile-section">
+                        <h4>Personal Information</h4>
+                        <form id="profileForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="profileName">Full Name *</label>
+                                    <input type="text" id="profileName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profileEmail">Email</label>
+                                    <input type="email" id="profileEmail" readonly style="background: var(--dark-lighter);">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="profileDepartment">Department</label>
+                                    <input type="text" id="profileDepartment">
+                                </div>
+                                <div class="form-group">
+                                    <label for="profilePosition">Position</label>
+                                    <input type="text" id="profilePosition">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn-secondary" id="cancelProfile">Cancel</button>
+                                <button type="submit" class="btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="fileUploadModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Upload File</h3>
+                <button class="close-modal" id="closeFileUploadModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadFileForm">
+                    <div class="form-group">
+                        <label for="fileUpload">Select File</label>
+                        <input type="file" id="fileUpload" required>
+                        <small>Maximum file size: 50MB</small>
+                    </div>
+                    <div class="file-preview">
+                        <span id="selectedFileName">No file selected</span>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="cancelFileUpload">Cancel</button>
+                        <button type="submit" class="btn-primary">Upload File</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

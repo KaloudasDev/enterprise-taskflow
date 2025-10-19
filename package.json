@@ -1,0 +1,40 @@
+{
+  "name": "enterprise-taskflow",
+  "version": "5.0.0",
+  "description": "Enterprise Task System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "reset": "rm -f taskflow.db && node server.js",
+    "setup": "npm install && node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.6"
+  },
+  "keywords": [
+    "task-management",
+    "enterprise",
+    "security",
+    "dark-theme",
+    "analytics",
+    "notifications",
+    "permissions",
+    "file-storage",
+    "activity-logs",
+    "real-time"
+  ],
+  "author": "Enterprise Development Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
