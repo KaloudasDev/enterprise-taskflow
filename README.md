@@ -70,7 +70,6 @@ taskflow-enterprise/
 
 ### Task Management
 ```javascript
-// Task object structure
 {
   id: number,
   title: string,
@@ -218,11 +217,9 @@ class TaskFlowEnterprise {
 
 ### Environment Setup
 ```javascript
-// Server configuration
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-// Security settings
 app.use(helmet());
 app.use(cors());
 app.use(rateLimit({
@@ -274,10 +271,8 @@ const authenticateToken = async (req, res, next) => {
 
 ### Password Security
 ```javascript
-// Hashing passwords
 const passwordHash = await bcrypt.hash(password, 12);
 
-// Verifying passwords
 const validPassword = await bcrypt.compare(password, user.password_hash);
 ```
 
