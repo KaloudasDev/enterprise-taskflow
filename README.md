@@ -342,3 +342,5 @@ npm start
 - Activity logs track all user actions
 - Error logging to console
 - Performance metrics available
+
+![Image](https://i.imgur.com/x1yHK9M.png)
