@@ -343,4 +343,6 @@ npm start
 - Error logging to console
 - Performance metrics available
 
+  <br>
+
 ![Image](https://i.imgur.com/x1yHK9M.png)
