@@ -203,16 +203,6 @@ class TaskFlowEnterprise {
 }
 ```
 
-### Key Components
-- **Login System** - Secure authentication flow
-- **Dashboard** - Real-time metrics and recent activities
-- **Task Manager** - CRUD operations with filtering
-- **User Management** - Role-based user administration
-- **File Storage** - Secure file handling
-- **Analytics** - Data visualization with Chart.js
-
----
-
 ## Configuration
 
 ### Environment Setup
@@ -226,25 +216,6 @@ app.use(rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100 // limit each IP to 100 requests per windowMs
 }));
-```
-
-### File Upload Configuration
-```javascript
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: 'uploads/',
-    filename: (req, file, cb) => {
-      const uniqueName = Date.now() + '-' + file.originalname;
-      cb(null, uniqueName);
-    }
-  }),
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
-  fileFilter: (req, file, cb) => {
-    // Validate file types
-    cb(null, true);
-  }
-});
-```
 
 ## Security Implementation
 
@@ -275,20 +246,6 @@ const passwordHash = await bcrypt.hash(password, 12);
 
 const validPassword = await bcrypt.compare(password, user.password_hash);
 ```
-
-## Data Flow
-
-### Task Creation Flow
-1. User submits task form → Frontend validation
-2. POST /api/tasks → Backend validation
-3. Database insertion → Success response
-4. Frontend updates UI → Activity log entry
-
-### File Upload Flow
-1. User selects file → Frontend validation
-2. POST /api/files/upload → Multer processing
-3. File metadata storage → Permission check
-4. Success response → UI update
 
 ## Deployment
 
@@ -330,8 +287,6 @@ npm start
 - JWT tokens for stateless authentication
 - Rate limiting prevents abuse
 
-## Troubleshooting
-
 ### Common Issues
 - **Database locks**: Ensure proper connection handling
 - **File upload fails**: Check uploads directory permissions
@@ -342,7 +297,3 @@ npm start
 - Activity logs track all user actions
 - Error logging to console
 - Performance metrics available
-
-  <br>
-
-![Image](https://i.imgur.com/x1yHK9M.png)
