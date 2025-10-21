@@ -1,7 +1,3 @@
-# TaskFlow Enterprise
-
-![TaskFlow Enterprise](https://i.imgur.com/cC4Bc9I.png)
-
 ## Enterprise Task Management System
 
 A full-stack task management solution built with modern web technologies. Features role-based access control, real-time analytics, and secure file management.
